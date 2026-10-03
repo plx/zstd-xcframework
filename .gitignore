@@ -53,3 +53,10 @@ dkms.conf
 
 # debug information files
 *.dwo
+
+# Native build products and pinned source caches
+.build/
+build/
+dist/
+.cache/
+__pycache__/

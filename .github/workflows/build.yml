@@ -1,0 +1,50 @@
+name: Build and release zstd
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+    tags: ['zstd-*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: native-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 60
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_16.4.app/Contents/Developer
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Validate build scripts
+        run: python3 -m unittest discover -s scripts -p 'test_*.py'
+      - name: Build and smoke-test all slices
+        run: python3 scripts/build.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ZstdC
+          path: dist/*
+          if-no-files-found: error
+      - name: Attest native archive
+        if: startsWith(github.ref, 'refs/tags/zstd-')
+        uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a # v3.0.0
+        with:
+          subject-path: dist/ZstdC.xcframework.zip
+      - name: Publish immutable versioned assets
+        if: startsWith(github.ref, 'refs/tags/zstd-')
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          python3 scripts/validate-release-tag.py "$RELEASE_TAG"
+          gh release create "$RELEASE_TAG" dist/*.zip dist/*.json dist/*.txt dist/*.sha256 --verify-tag --title "$RELEASE_TAG" --notes-file RELEASE-NOTES.md

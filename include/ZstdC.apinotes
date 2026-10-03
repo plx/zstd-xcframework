@@ -1,0 +1,28 @@
+---
+Name: ZstdC
+Functions:
+  - Name: ZSTD_defaultCLevel
+    SwiftName: zstdDefaultCompressionLevel()
+  - Name: ZSTD_versionString
+    NullabilityOfRet: N
+  - Name: ZSTD_getErrorName
+    NullabilityOfRet: N
+  - Name: ZSTD_getErrorString
+    NullabilityOfRet: N
+  - Name: ZSTD_createCCtx
+    NullabilityOfRet: O
+  - Name: ZSTD_createDCtx
+    NullabilityOfRet: O
+  - Name: ZSTD_createCStream
+    NullabilityOfRet: O
+  - Name: ZSTD_createDStream
+    NullabilityOfRet: O
+  - Name: ZSTD_freeCCtx
+    Parameters:
+      - Position: 0
+        Nullability: O
+  - Name: ZSTD_freeDCtx
+    Parameters:
+      - Position: 0
+        Nullability: O
+...
