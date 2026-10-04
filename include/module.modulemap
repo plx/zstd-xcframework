@@ -1,0 +1,7 @@
+module ZstdC [system] {
+  header "zstd.h"
+  header "zstd_errors.h"
+  header "zdict.h"
+  header "ZstdSupport.h"
+  export *
+}
